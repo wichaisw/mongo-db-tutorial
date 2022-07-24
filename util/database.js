@@ -4,9 +4,9 @@ const { MongoClient } = require('mongodb');
 let _db;
 
 const mongoConnect = (callback) => {
-  MongoClient.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@play-ground.46xs0.mongodb.net/shop?retryWrites=true&w=majority`)
+  MongoClient.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@play-ground.46xs0.mongodb.net/shop`)
     .then(client => {
-      console.log('Connected!')
+      console.log('Mongo Connected!')
       // could pass db name as an argument to connect to non-default db
       _db = client.db();
       callback();
