@@ -1,4 +1,5 @@
-const { getDb } = require("../util/database");
+const mongodb = require('mongodb');
+const getDb = require('../util/database').getDb;
 
 class Product {
   constructor(title, price, description, imageUrl) {
@@ -13,15 +14,17 @@ class Product {
     return db.collection('products')
       .insertOne(this)
       .then(result => {
-        console.log(result)
+        // console.log(result);
       })
       .catch(err => {
-        console.log(err)
+        console.log(err);
       });
   }
 
   static fetchAll() {
     const db = getDb();
+    // .find() return cursor object
+    // .toArray() force it to return all values, only use this for handlable amount of data
     return db
       .collection('products')
       .find()
@@ -34,28 +37,22 @@ class Product {
         console.log(err)
       })
   }
+
+  static findById(prodId) {
+    const db = getDb();
+    return db
+      .collection('products')
+      .find({_id: new mongodb.ObjectId(prodId) })
+      .next()
+      .then(product => {
+        // console.log(product)
+        return product;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
 }
 
-// const Product = sequelize.define('product', {
-//   id: {
-//     type: Sequelize.INTEGER,
-//     autoIncrement: true,
-//     allowNull: false,
-//     primaryKey: true
-//   },
-//   title: Sequelize.STRING,
-//   price: {
-//     type: Sequelize.DOUBLE,
-//     allowNull: false
-//   },
-//   imageUrl: {
-//     type: Sequelize.STRING,
-//     allowNull: false
-//   },
-//   description: {
-//     type: Sequelize.STRING,
-//     allowNull: false
-//   }
-// });
 
 module.exports = Product;
