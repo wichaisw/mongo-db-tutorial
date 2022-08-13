@@ -86,7 +86,8 @@ class User {
       .collection("products")
       .find({ _id: { $in: productIds } })
       .toArray()
-      .then((products) => {
+      .then(products => {
+        // TODO check amount of products in cart and from database, in case any product is deleted
         return products.map((p) => {
           return {
             ...p,
