@@ -81,11 +81,12 @@ class User {
     const productIds = this.cart.items.map((i) => {
       return i.productId;
     });
+    // embedded document
     return db
       .collection("products")
       .find({ _id: { $in: productIds } })
       .toArray()
-      .then(products => {
+      .then((products) => {
         return products.map((p) => {
           return {
             ...p,
@@ -98,17 +99,50 @@ class User {
   }
 
   deleteItemFromCart(productId) {
-    const updatedCartItems = this.cart.items.filter(item => {
+    const updatedCartItems = this.cart.items.filter((item) => {
       return item.productId.toString() !== productId.toString();
     });
 
     const db = getDb();
     return db
-      .collection('users')
+      .collection("users")
       .updateOne(
-        {_id: new ObjectId(this._id)},
-        {$set: {cart: {items: updatedCartItems}}}
-      )
+        { _id: new ObjectId(this._id) },
+        { $set: { cart: { items: updatedCartItems } } }
+      );
+  }
+
+  addOrder() {
+    const db = getDb();
+    return this.getCart()
+      .then((products) => {
+        const order = {
+          items: products,
+          user: {
+            _id: new ObjectId(this._id),
+            name: this.name,
+          },
+        };
+        // insert cart in order before clearing it from User object, and db
+        return db.collection("orders").insertOne(order);
+      })
+      .then((result) => {
+        this.cart = { items: [] };
+        return db
+          .collection("users")
+          .updateOne(
+            { _id: new ObjectId(this._id) },
+            { $set: { cart: { items: [] } } }
+          );
+      });
+  }
+
+  getOrders() {
+    const db = getDb();
+    return db
+      .collection("orders")
+      .find({ "user._id": new ObjectId(this._id) })
+      .toArray();
   }
 }
 
