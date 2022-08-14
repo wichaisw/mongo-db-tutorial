@@ -22,19 +22,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // middleware for global user
-// app.use((req, res, next) => {
-//   User.findById('62f394915a8d0e2ecb8dd480')
-//     .then(user => {
-//       req.user = new User(
-//         user.name,
-//         user.email,
-//         user.cart,
-//         user._id
-//       );
-//       next();
-//     })
-//     .catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+  User.findById(`${process.env.SHOP_USER}`)
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -44,8 +39,21 @@ app.use(errorController.get404);
 mongoose
   .connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@play-ground.46xs0.mongodb.net/shop`)
   .then(result => {
+    // create a test user
+    User.findOne().then(user => {
+      if(!user) {
+        const user = new User({
+          name: 'Eric Wang',
+          email: 'joma@jomama.com',
+          cart: {
+            items: []
+          }
+        });
+        user.save();
+      }
+    })
     app.listen(3000, () => console.log('server is runing on port 3000'));
   })
   .catch(err => {
     console.log(err);
-  })
+  });
