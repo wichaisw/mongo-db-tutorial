@@ -16,10 +16,11 @@ exports.postAddProduct = (req, res, next) => {
     price,
     description,
     imageUrl,
+    userId: req.user, // mongoose pick just ._id automatically
   });
   product
     .save()
-    .then((result) => {
+    .then(result => {
       console.log("Created Product");
       res.redirect("/admin/products");
     })
@@ -76,6 +77,8 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+    // .select('title price -_id') // get only specific fields
+    // .populate('userId', 'name') // get reference data
     .then(products => {
       res.render("admin/products", {
         prods: products,

@@ -43,40 +43,48 @@ exports.getIndex = (req, res, next) => {
     });
 };
 
-// exports.getCart = (req, res, next) => {
-//   req.user
-//     .getCart()
-//     .then(products => {
-//       res.render('shop/cart', {
-//         path: '/cart',
-//         pageTitle: 'Your Cart',
-//         products: products
-//       });
-//     })
-//     .catch(err => console.log(err))
-// };
+exports.getCart = (req, res, next) => {
+  req.user
+    .populate({
+      path: 'cart.items.productId',
+      select: '-description -imageUrl'
+    })
+    .then(user => {
+      const products = user.cart.items;
+      console.log(products)
+      
+      res.render('shop/cart', {
+        path: '/cart',
+        pageTitle: 'Your Cart',
+        products: products
+      });
+    })
+    .catch(err => console.log(err))
+};
 
-// exports.postCart = (req, res, next) => {
-//   const prodId = req.body.productId;
-//   Product.findById(prodId).then(product => {
-//     return req.user.addToCart(product);
-//   }).then(result => {
-//     // console.log(result);
-//     res.redirect('/cart');
-//   }).catch(err => {
-//     console.log(err);
-//   });
-// };
+exports.postCart = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.findById(prodId)
+    .then(product => {
+      return req.user.addToCart(product);
+    }).then(result => {
+      // console.log(result);
+      res.redirect('/cart');
+    }).catch(err => {
+      console.log(err);
+    });
+};
 
-// exports.postCartDeleteProduct = (req, res, next) => {
-//   const prodId = req.body.productId;
-//   req.user
-//     .deleteItemFromCart(prodId)
-//     .then(result => {
-//       res.redirect('/cart');
-//     })
-//     .catch(err => console.log(err));
-// };
+exports.postCartDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  req.user
+    .removeFromCart(prodId)
+    .then(result => {
+      console.log('a product remove from the cart')
+      res.redirect('/cart');
+    })
+    .catch(err => console.log(err));
+};
 
 // exports.postOrder = (req, res, next) => {
 //   req.user
