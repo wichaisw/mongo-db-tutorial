@@ -1,31 +1,32 @@
-require('dotenv').config();
-const { MongoClient } = require('mongodb');
+// // vanilla mongo setup, unnecessary for mongoose
+// require('dotenv').config();
+// const { MongoClient } = require('mongodb');
 
-let _db;
+// let _db;
 
-const mongoConnect = (callback) => {
-  MongoClient.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@play-ground.46xs0.mongodb.net/shop`)
-    .then(client => {
-      console.log('Mongo Connected!')
-      // could pass db name as an argument to connect to non-default db
-      _db = client.db();
-      callback();
-    })
-    .catch(err => {
-      console.log(err);
-      throw err;
-    });
-}
+// const mongoConnect = (callback) => {
+//   MongoClient.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@play-ground.46xs0.mongodb.net/shop`)
+//     .then(client => {
+//       console.log('Mongo Connected!')
+//       // could pass db name as an argument to connect to non-default db
+//       _db = client.db();
+//       callback();
+//     })
+//     .catch(err => {
+//       console.log(err);
+//       throw err;
+//     });
+// }
 
-const getDb = () => {
-  if(_db) {
-    return _db;
-  }
+// const getDb = () => {
+//   if(_db) {
+//     return _db;
+//   }
 
-  throw 'No database found';
-};
+//   throw 'No database found';
+// };
 
-module.exports = {
-  mongoConnect,
-  getDb
-}
+// module.exports = {
+//   mongoConnect,
+//   getDb
+// }
